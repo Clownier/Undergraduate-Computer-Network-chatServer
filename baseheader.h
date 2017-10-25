@@ -10,6 +10,14 @@
 #include<QMessageBox>
 #include <thread>
 #include <QDebug>
+#include<QSettings>
+#include<QJsonArray>
+#include<QJsonDocument>
+#include<QJsonObject>
+#include<QJsonParseError>
+#include <QFile>
+#include<QTextStream>
+#include<QUuid>
 #define BUFLEN 255
 using namespace std;
 void showCritical(const QString content);

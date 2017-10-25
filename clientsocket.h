@@ -1,6 +1,7 @@
 #ifndef CLIENTSOCKET_H
 #define CLIENTSOCKET_H
 #include "baseheader.h"
+#include "databaseutil.h"
 using namespace std;
 class ClientSocket{
 

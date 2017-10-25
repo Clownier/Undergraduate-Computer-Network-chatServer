@@ -23,14 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     getHostInfoMation();
 
-
-    ServerSocket serverSocket;
-    while(1){
-        ClientSocket clientSocket = serverSocket.poll();
-        std::thread clientThread(&MainWindow::carryClient,this,clientSocket);
-        //std::thread clientThread(&clientSocket.carry,this);
-        clientThread.detach();
-    }
 }
 
 MainWindow::~MainWindow()
@@ -44,8 +36,17 @@ void MainWindow::getHostInfoMation(){
     QHostInfo hostInfo = QHostInfo::fromName(localHostName);
     QList<QHostAddress> listAddress = hostInfo.addresses();
     lineEditAddress->setText(listAddress.at(6).toString());
-    for(int i =0;i<listAddress.length();i++)
-        qDebug()<<"the "<<i<<" address:"<<listAddress.at(i).toString()<<"\n";
+    qDebug()<<listAddress.at(6).toString();
+//    for(int i =0;i<listAddress.length();i++)
+//        qDebug()<<"the "<<i<<" address:"<<listAddress.at(i).toString()<<"\n";
+
+    ServerSocket serverSocket;
+    while(1){
+        ClientSocket clientSocket = serverSocket.poll();
+        std::thread clientThread(&MainWindow::carryClient,this,clientSocket);
+        //std::thread clientThread(&clientSocket.carry,this);
+        clientThread.detach();
+    }
 }
 
 

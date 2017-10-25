@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT  += network
+QT += sql
 
 LIBS += -lws2_32
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -30,13 +31,15 @@ SOURCES += \
         mainwindow.cpp \
     serversocket.cpp \
     clientsocket.cpp \
-    baseheader.cpp
+    baseheader.cpp \
+    databaseutil.cpp
 
 HEADERS += \
         mainwindow.h \
     serversocket.h \
     baseheader.h \
-    clientsocket.h
+    clientsocket.h \
+    databaseutil.h
 
 FORMS += \
         mainwindow.ui
