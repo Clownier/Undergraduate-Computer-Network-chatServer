@@ -4,7 +4,7 @@
 
 class DataBaseUtil
 {
-    QFile *qF;
+    QFile *qF,qFile;
     //QTextStream *qTS;
 public:
     DataBaseUtil();
@@ -12,6 +12,7 @@ public:
     ~DataBaseUtil();
     int openReadFile();
     int openWriteFile();
+    static QString searchUuid(QString email,QString password);
 };
 
 #endif // DATABASEUTIL_H

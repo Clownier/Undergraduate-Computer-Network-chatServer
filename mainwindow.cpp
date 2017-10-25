@@ -21,8 +21,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     centralWidget()->setLayout(mainLayout);
 
-    getHostInfoMation();
-
+    QString localHostName = QHostInfo::localHostName();
+    lineEditLoacalHostName->setText(localHostName);
+    QHostInfo hostInfo = QHostInfo::fromName(localHostName);
+    QList<QHostAddress> listAddress = hostInfo.addresses();
+    lineEditAddress->setText(listAddress.at(6).toString());
+    qDebug()<<listAddress.at(6).toString();
+    //getHostInfoMation();
+    std::thread serverThread(&MainWindow::getHostInfoMation,this);
+    serverThread.detach();
 }
 
 MainWindow::~MainWindow()
@@ -31,14 +38,37 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::getHostInfoMation(){
-    QString localHostName = QHostInfo::localHostName();
-    lineEditLoacalHostName->setText(localHostName);
-    QHostInfo hostInfo = QHostInfo::fromName(localHostName);
-    QList<QHostAddress> listAddress = hostInfo.addresses();
-    lineEditAddress->setText(listAddress.at(6).toString());
-    qDebug()<<listAddress.at(6).toString();
 //    for(int i =0;i<listAddress.length();i++)
 //        qDebug()<<"the "<<i<<" address:"<<listAddress.at(i).toString()<<"\n";
+
+//    QFile loginFile("loginFile.txt");
+//    if(!loginFile.open(QIODevice::WriteOnly|QIODevice::Text)){
+//        qDebug()<<"open login file error";
+//        return;
+//    }
+//    QTextStream txtOutput(&loginFile);
+//    QJsonParseError *error=new QJsonParseError;
+//    QByteArray user;
+//    QJsonArray infoArr;
+//    infoArr.insert(0,"123");
+//    infoArr.insert(1,"123");
+//    infoArr.insert(2,QUuid::createUuid().toString());
+//    QJsonDocument docu;
+//    docu.setArray(infoArr);
+//    user = docu.toJson(QJsonDocument::Compact);
+//    txtOutput<<user<<endl;
+
+//    QJsonArray infoArr1;
+//    infoArr1.insert(0,"1234");
+//    infoArr1.insert(1,"1234");
+//    infoArr1.insert(2,QUuid::createUuid().toString());
+//    QJsonDocument docu1;
+//    docu1.setArray(infoArr1);
+//    user = docu1.toJson(QJsonDocument::Compact);
+//    txtOutput<<user<<endl;
+
+
+
 
     ServerSocket serverSocket;
     while(1){

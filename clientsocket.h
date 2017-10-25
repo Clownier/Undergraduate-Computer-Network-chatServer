@@ -4,7 +4,9 @@
 #include "databaseutil.h"
 using namespace std;
 class ClientSocket{
-
+    int tologin(QString email,QString password);
+    int toregister(QJsonArray qArr);
+    int toretrieve(QJsonArray qArr);
 public:
     SOCKET clientSocket;
     sockaddr_in clientAddr;
