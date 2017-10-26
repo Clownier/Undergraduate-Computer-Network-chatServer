@@ -25,8 +25,16 @@ MainWindow::MainWindow(QWidget *parent) :
     lineEditLoacalHostName->setText(localHostName);
     QHostInfo hostInfo = QHostInfo::fromName(localHostName);
     QList<QHostAddress> listAddress = hostInfo.addresses();
-    lineEditAddress->setText(listAddress.at(6).toString());
-    qDebug()<<listAddress.at(6).toString();
+    if(listAddress.length()>6){
+        lineEditAddress->setText(listAddress.at(6).toString());
+        qDebug()<<listAddress.at(6).toString();
+    }else{
+        lineEditAddress->setText(listAddress.last().toString());
+        qDebug()<<listAddress.last().toString();
+    }
+
+    for(int i =0;i<listAddress.length();i++)
+        qDebug()<<"the "<<i<<" address:"<<listAddress.at(i).toString()<<"\n";
     //getHostInfoMation();
     std::thread serverThread(&MainWindow::getHostInfoMation,this);
     serverThread.detach();

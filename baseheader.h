@@ -18,6 +18,7 @@
 #include <QFile>
 #include<QTextStream>
 #include<QUuid>
+#include<QListWidget>
 #define BUFLEN 255
 using namespace std;
 void showCritical(const QString content);

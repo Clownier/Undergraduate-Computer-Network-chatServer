@@ -7,6 +7,7 @@ class ClientSocket{
     int tologin(QString email,QString password);
     int toregister(QJsonArray qArr);
     int toretrieve(QJsonArray qArr);
+    QString Uuid;
 public:
     SOCKET clientSocket;
     sockaddr_in clientAddr;
@@ -14,6 +15,7 @@ public:
     ~ClientSocket();
     int send(string sendbuf);
     int send();
+    int Qsend(QString buf);
     void close();
     string recv();
     void carry();

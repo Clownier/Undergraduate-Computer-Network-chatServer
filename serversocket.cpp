@@ -52,7 +52,7 @@ ServerSocket::~ServerSocket(){
 }
 
 void ServerSocket::showErrorStr(const QString error){
-    errorStr.sprintf("%s%d\n",error,WSAGetLastError());
+    errorStr.sprintf("%s%d\n",error.toStdString().c_str(),WSAGetLastError());
     showCritical(errorStr);
 }
 
@@ -65,6 +65,7 @@ ClientSocket ServerSocket::poll(){
     FD_SET(serverSocket, &readfds);
     //开始等待
     int nTotal = select(0, &readfds, &writefds, NULL, NULL);
+    Q_UNUSED(nTotal);
     SOCKET connSocket;
     sockaddr_in client_Addr;
     if(FD_ISSET(serverSocket,&readfds)){

@@ -13,6 +13,7 @@ public:
     int openReadFile();
     int openWriteFile();
     static QString searchUuid(QString email,QString password);
+    static QString getAllUsersName(QString uuid);
 };
 
 #endif // DATABASEUTIL_H

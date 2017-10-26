@@ -59,3 +59,29 @@ QString DataBaseUtil::searchUuid(QString email, QString password){
     loginFile.close();
     return "";
 }
+QString DataBaseUtil::getAllUsersName(QString Uuid){
+    //获取全部用户的信息，用#分隔本人姓名，用；分隔用户，以昵称{Uuid}形式保存
+    QFile UserFile("userFile.txt");
+    if(!UserFile.open(QIODevice::ReadOnly|QIODevice::Text)){
+        qDebug()<<"open user File fail!";
+        return "";
+    }
+    QTextStream txtOutput(&UserFile);
+    QJsonParseError *error = new QJsonParseError;
+    QByteArray userInfo;
+    QJsonArray infoarr;
+    QString myName;
+    QStringList strlist;
+    while(!txtOutput.atEnd()){
+        userInfo = txtOutput.readLine().toLatin1();
+        infoarr = QJsonDocument::fromJson(userInfo,error).array();
+        if(infoarr.at(0).toString()==Uuid){
+            myName = infoarr.at(1).toString();
+            continue;
+        }
+        QString info = infoarr.at(1).toString() + infoarr.at(0).toString();
+        strlist.append(info);
+    }
+    QString res = strlist.join(";") + "#" + myName;
+    return res;
+}
