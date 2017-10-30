@@ -7,7 +7,9 @@ class ClientSocket{
     int tologin(QString email,QString password);
     int toregister(QJsonArray qArr);
     int toretrieve(QJsonArray qArr);
+    int doRequest();
     QString Uuid;
+    static vector<ClientSocket> onlineCS;
 public:
     SOCKET clientSocket;
     sockaddr_in clientAddr;
@@ -18,6 +20,7 @@ public:
     int Qsend(QString buf);
     void close();
     string recv();
+    QString Qrecv();
     void carry();
     char sendBuf[BUFLEN], recvBuf[BUFLEN],error[BUFLEN];
 };

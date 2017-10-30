@@ -82,6 +82,8 @@ QString DataBaseUtil::getAllUsersName(QString Uuid){
         QString info = infoarr.at(1).toString() + infoarr.at(0).toString();
         strlist.append(info);
     }
-    QString res = strlist.join(";") + "#" + myName;
+    QString res = strlist.join(";");
+    res.append("#");
+    res.append(myName);
     return res;
 }

@@ -23,7 +23,8 @@ int ClientSocket::send(){
     return send(sendBuf);
 }
 int ClientSocket::Qsend(QString buf){
-    sprintf(sendBuf,"%s",buf.toStdString().data());
+    QString len = QString::number(buf.length(),10);
+    sprintf(sendBuf,"%s,%s",len.toStdString().data(),buf.toStdString().data());
     return send();
 }
 
@@ -38,6 +39,15 @@ string ClientSocket::recv(){
     return res;
 }
 
+QString ClientSocket::Qrecv(){//
+    memset(recvBuf,'\0',BUFLEN);
+    int nRC = ::recv(client_Socket,recvBuf,BUFLEN,0);
+    QString res = QString::fromStdString(recvBuf);
+    int index = res.indexOf(",");
+    int len = res.mid(0,index).toInt();
+    qDebug()<<"len = "<<len<<"Qrecv() ="<<recvBuf<<"\n";
+    return res.mid(index+1,len);
+}
 
 void ClientSocket::carry(){//客户端链接服务器后预处理：注册登陆找回密码
     int result = 0;
@@ -58,13 +68,26 @@ void ClientSocket::carry(){//客户端链接服务器后预处理：注册登陆
     }
     qDebug()<<inet_ntoa(clientAddr.sin_addr)<<":"<<clientAddr.sin_port<<"login success!";
     QString UserInfo = DataBaseUtil::getAllUsersName(Uuid);
+    qDebug()<<"userInfo ="<<UserInfo.toStdString().data();
+    int num = UserInfo.length()/200;
+    for(int i =0;i<=num;i++){
+        QJsonArray arr;
+        if(i<num)   arr.insert(0,258);//...ing
+        else arr.insert(0,259);//...ed
+        arr.insert(1,UserInfo.mid(i*200,200));
+        QJsonDocument document;document.setArray(arr);
+        Qsend(QString(document.toJson(QJsonDocument::Compact)));
+    }
+    doRequest();
+}
 
-    QJsonArray arr;arr.insert(0,258);
-    arr.insert(1,UserInfo);
-    QJsonDocument document;document.setArray(arr);
-    UserInfo = QString(document.toJson(QJsonDocument::Compact));
-    Qsend(UserInfo);
+int ClientSocket::doRequest(){
+    while(1){
+        QString req = Qrecv();
+        if(req.length() == 0)
+            continue;
 
+    }
 }
 
 int ClientSocket::tologin(QString email, QString password){
