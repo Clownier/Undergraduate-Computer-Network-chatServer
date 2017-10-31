@@ -9,7 +9,7 @@ class ClientSocket{
     int toretrieve(QJsonArray qArr);
     int doRequest();
     QString Uuid;
-    static vector<ClientSocket> onlineCS;
+    //static vector<ClientSocket> onlineCS;
 public:
     SOCKET clientSocket;
     sockaddr_in clientAddr;

@@ -41,7 +41,7 @@ string ClientSocket::recv(){
 
 QString ClientSocket::Qrecv(){//
     memset(recvBuf,'\0',BUFLEN);
-    int nRC = ::recv(client_Socket,recvBuf,BUFLEN,0);
+    int nRC = ::recv(clientSocket,recvBuf,BUFLEN,0);
     QString res = QString::fromStdString(recvBuf);
     int index = res.indexOf(",");
     int len = res.mid(0,index).toInt();

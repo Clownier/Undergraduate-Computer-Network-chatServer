@@ -49,7 +49,7 @@ void MainWindow::getHostInfoMation(){
     ServerSocket serverSocket;
     while(1){
         ClientSocket clientSocket = serverSocket.poll();
-        clientSocket.onlineCS.push_back(clientSocket);
+        //clientSocket.onlineCS.push_back(clientSocket);
         std::thread clientThread(&MainWindow::carryClient,this,clientSocket);
         //std::thread clientThread(&clientSocket.carry,this);
         clientThread.detach();
