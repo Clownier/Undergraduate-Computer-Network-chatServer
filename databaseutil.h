@@ -14,6 +14,7 @@ public:
     int openWriteFile();
     static QString searchUuid(QString email,QString password);
     static QString getAllUsersName(QString uuid);
+    static int writeAtEnd(QString context);
 };
 
 #endif // DATABASEUTIL_H

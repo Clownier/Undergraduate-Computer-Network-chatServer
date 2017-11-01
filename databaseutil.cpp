@@ -87,3 +87,14 @@ QString DataBaseUtil::getAllUsersName(QString Uuid){
     res.append(myName);
     return res;
 }
+
+int DataBaseUtil::writeAtEnd(QString context){
+    QFile writeFile("history.txt");
+    if(!writeFile.open(QIODevice::Append|QIODevice::Text|QIODevice::WriteOnly)){
+        qDebug()<<"open history fail!";
+        return -1;
+    }
+    QTextStream txtInput(&writeFile);
+    txtInput<<context<<endl;
+    return 0;
+}

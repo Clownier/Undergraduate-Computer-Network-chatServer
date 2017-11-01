@@ -3,13 +3,10 @@
 ClientSocket::ClientSocket(SOCKET socket,sockaddr_in addr):
     clientSocket(socket),
     clientAddr(addr)
-{
+{   }
 
-}
+ClientSocket::~ClientSocket(){  }
 
-ClientSocket::~ClientSocket(){
-
-}
 int ClientSocket::send(string sendbuf){
     if (::send(clientSocket, sendbuf.c_str(), sendbuf.length() + 1, 0) == SOCKET_ERROR) {
         sprintf(error,"send error!\tcode:%d\n",WSAGetLastError());
@@ -27,7 +24,6 @@ int ClientSocket::Qsend(QString buf){
     sprintf(sendBuf,"%s,%s",len.toStdString().data(),buf.toStdString().data());
     return send();
 }
-
 string ClientSocket::recv(){
     memset(recvBuf,'\0',BUFLEN);
     int nRC = ::recv(clientSocket, recvBuf, BUFLEN, 0);
@@ -38,11 +34,12 @@ string ClientSocket::recv(){
     string res(recvBuf);
     return res;
 }
-
 QString ClientSocket::Qrecv(){//
     memset(recvBuf,'\0',BUFLEN);
     int nRC = ::recv(clientSocket,recvBuf,BUFLEN,0);
     QString res = QString::fromStdString(recvBuf);
+    if(nRC == SOCKET_ERROR||res.length()==0)
+        return "";
     int index = res.indexOf(",");
     int len = res.mid(0,index).toInt();
     qDebug()<<"len = "<<len<<"Qrecv() ="<<recvBuf<<"\n";
@@ -81,12 +78,17 @@ void ClientSocket::carry(){//客户端链接服务器后预处理：注册登陆
     doRequest();
 }
 
-int ClientSocket::doRequest(){
-    while(1){
+int ClientSocket::doRequest(){//处理用户发送消息等功能
+    while(1){//
         QString req = Qrecv();
         if(req.length() == 0)
             continue;
-
+        QJsonParseError *error = new QJsonParseError;
+        QJsonArray array = QJsonDocument::fromJson(req.toLatin1(),error).array();
+        if(array.at(0).toInt() == 584){
+            if(0!=DataBaseUtil::writeAtEnd(req))
+                qDebug()<<"write into file fail!";
+        }
     }
 }
 
