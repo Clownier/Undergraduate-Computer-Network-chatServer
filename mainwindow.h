@@ -9,7 +9,7 @@
 #include <QtNetwork/QNetworkInterface>
 #include "serversocket.h"
 #include "clientsocket.h"
-
+#include<QMap>
 namespace Ui {
 class MainWindow;
 }
@@ -27,6 +27,7 @@ private:
     Ui::MainWindow *ui;
     QLineEdit *lineEditAddress,*lineEditLoacalHostName;
     void carryClient(ClientSocket socket);
+    QMap<QString,ClientSocket> onLineCS;
 };
 
 #endif // MAINWINDOW_H

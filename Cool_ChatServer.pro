@@ -32,14 +32,19 @@ SOURCES += \
     serversocket.cpp \
     clientsocket.cpp \
     baseheader.cpp \
-    databaseutil.cpp
+    databaseutil.cpp \
 
 HEADERS += \
         mainwindow.h \
     serversocket.h \
     baseheader.h \
     clientsocket.h \
-    databaseutil.h
+    databaseutil.h \
 
 FORMS += \
         mainwindow.ui
+
+DISTFILES += \
+    ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/history.txt \
+    ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/loginFile.txt \
+    ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/userFile.txt

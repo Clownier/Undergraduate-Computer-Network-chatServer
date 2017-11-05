@@ -1,9 +1,9 @@
 #include "clientsocket.h"
-
 ClientSocket::ClientSocket(SOCKET socket,sockaddr_in addr):
     clientSocket(socket),
     clientAddr(addr)
-{   }
+{
+}
 
 ClientSocket::~ClientSocket(){  }
 
@@ -27,7 +27,7 @@ int ClientSocket::Qsend(QString buf){
 string ClientSocket::recv(){
     memset(recvBuf,'\0',BUFLEN);
     int nRC = ::recv(clientSocket, recvBuf, BUFLEN, 0);
-    if(nRC == SOCKET_ERROR)
+    if(nRC == SOCKET_ERROR||nRC == 0)
         return string("");
     recvBuf[nRC] = '\0';
     qDebug()<<"recvBuf = "<<recvBuf<<"\n";
@@ -46,7 +46,7 @@ QString ClientSocket::Qrecv(){//
     return res.mid(index+1,len);
 }
 
-void ClientSocket::carry(){//客户端链接服务器后预处理：注册登陆找回密码
+QString ClientSocket::carry(){//客户端链接服务器后预处理：注册登陆找回密码
     int result = 0;
     while(0 == result){
         string prepro = recv();
@@ -75,7 +75,8 @@ void ClientSocket::carry(){//客户端链接服务器后预处理：注册登陆
         QJsonDocument document;document.setArray(arr);
         Qsend(QString(document.toJson(QJsonDocument::Compact)));
     }
-    doRequest();
+    return Uuid;
+    //doRequest();
 }
 
 int ClientSocket::doRequest(){//处理用户发送消息等功能
@@ -86,11 +87,20 @@ int ClientSocket::doRequest(){//处理用户发送消息等功能
         QJsonParseError *error = new QJsonParseError;
         QJsonArray array = QJsonDocument::fromJson(req.toLatin1(),error).array();
         if(array.at(0).toInt() == 584){
-            if(0!=DataBaseUtil::writeAtEnd(req))
+//            ClientSocket *obj = FindByUuid(array.at(1).toString());
+//                qDebug()<<obj->Uuid.toStdString().data();
+            if(0!=DataBaseUtil::writeAtEnd(req))//保存到历史记录中
                 qDebug()<<"write into file fail!";
         }
     }
 }
+//ClientSocket * ClientSocket::FindByUuid(QString find){
+////    ClientSocket *res = onlineCS;
+////    while(res->Uuid != find){
+////        res=res->next;
+////    }
+////    return res;
+//}
 
 int ClientSocket::tologin(QString email, QString password){
     Uuid = DataBaseUtil::searchUuid(email,password);
@@ -105,7 +115,8 @@ int ClientSocket::tologin(QString email, QString password){
     }
     qDebug()<<Uuid;
     QJsonArray arr;arr.insert(0,1);
-    arr.insert(1,Uuid);
+    arr.insert(1,Uuid);arr.insert(2,inet_ntoa(clientAddr.sin_addr));
+    arr.insert(3,clientAddr.sin_port);
     QJsonDocument document;document.setArray(arr);
     QByteArray byteArr = document.toJson(QJsonDocument::Compact);
     sprintf(sendBuf,"%s",byteArr.toStdString().c_str());

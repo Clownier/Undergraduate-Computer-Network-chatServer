@@ -8,10 +8,9 @@ class ClientSocket{
     int toregister(QJsonArray qArr);
     int toretrieve(QJsonArray qArr);
     int doRequest();
-    QString Uuid;
-    //static vector<ClientSocket> onlineCS;
 public:
     SOCKET clientSocket;
+    QString Uuid;
     sockaddr_in clientAddr;
     ClientSocket(SOCKET socket,sockaddr_in addr);
     ~ClientSocket();
@@ -21,8 +20,7 @@ public:
     void close();
     string recv();
     QString Qrecv();
-    void carry();
+    QString carry();
     char sendBuf[BUFLEN], recvBuf[BUFLEN],error[BUFLEN];
 };
-
 #endif // CLIENTSOCKET_H

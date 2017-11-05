@@ -49,9 +49,7 @@ void MainWindow::getHostInfoMation(){
     ServerSocket serverSocket;
     while(1){
         ClientSocket clientSocket = serverSocket.poll();
-        //clientSocket.onlineCS.push_back(clientSocket);
         std::thread clientThread(&MainWindow::carryClient,this,clientSocket);
-        //std::thread clientThread(&clientSocket.carry,this);
         clientThread.detach();
     }
 }
@@ -62,5 +60,44 @@ void MainWindow::carryClient(ClientSocket socket){
     address.sprintf( "the visitor from %s:%d login!\n",
                      inet_ntoa(socket.clientAddr.sin_addr),socket.clientAddr.sin_port);
     qDebug()<<address;
-    socket.carry();
+    QString Uuid = socket.carry();
+    onLineCS.insert(Uuid,socket);
+    while(1){
+        QString req = socket.Qrecv();
+        if(req.length() == 0)
+            continue;
+        QJsonParseError *error = new QJsonParseError;
+        QJsonArray array = QJsonDocument::fromJson(req.toLatin1(),error).array();
+        if(array.at(0).toInt()==583){
+            QMap<QString,ClientSocket>::iterator res = onLineCS.find(array.at(1).toString());
+
+            if(res != onLineCS.end()){
+                ClientSocket *obj = &(res.value());
+                qDebug()<<inet_ntoa(obj->clientAddr.sin_addr)<<":"<<obj->clientAddr.sin_port;
+//                QJsonArray addrArray;
+//                addrArray.insert(0,583);
+//                addrArray.insert(1,inet_ntoa(socket.clientAddr.sin_addr));
+//                addrArray.insert(2,socket.clientAddr.sin_port);
+                QString Ip = inet_ntoa(obj->clientAddr.sin_addr);
+                array.replace(1,Ip);
+                array.insert(2,obj->clientAddr.sin_port);
+                QJsonDocument doc;doc.setArray(array);
+                QString send = doc.toJson(QJsonDocument::Compact);
+                socket.Qsend(send);
+                //qDebug()<<obj->Uuid.toStdString().data()<<"addr ="<<address;
+            }else{
+                QJsonArray addrArray;
+                qDebug()<<"Aim user is lost";
+                addrArray.insert(0,584);
+                QJsonDocument doc;doc.setArray(addrArray);
+                QString send = doc.toJson(QJsonDocument::Compact);
+                socket.Qsend(send);
+            }
+        }
+        else if(array.at(0).toInt() == 584){
+            if(0!=DataBaseUtil::writeAtEnd(req))//保存到历史记录中
+                qDebug()<<"write into file fail!";
+        }
+    }
 }
+
