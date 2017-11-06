@@ -13,8 +13,12 @@ public:
     int openReadFile();
     int openWriteFile();
     static QString searchUuid(QString email,QString password);
+    static bool searchUuid(QString email);
     static QString getAllUsersName(QString uuid);
     static int writeAtEnd(QString context);
+    static void saveRegister(QJsonArray arr);
+    static QString searchInfo(QString email);
+    static QString searchPassword(QString Uuid);
 };
 
 #endif // DATABASEUTIL_H

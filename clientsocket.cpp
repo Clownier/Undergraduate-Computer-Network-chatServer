@@ -49,17 +49,17 @@ QString ClientSocket::Qrecv(){//
 QString ClientSocket::carry(){//客户端链接服务器后预处理：注册登陆找回密码
     int result = 0;
     while(0 == result){
-        string prepro = recv();
+        QString prepro;
         while(prepro.length()==0)
-            prepro = recv();
+            prepro = Qrecv();
         QJsonParseError *error = new QJsonParseError;
-        QString qStr= QString::fromStdString(prepro);
-        QJsonArray qArr = QJsonDocument::fromJson(qStr.toLatin1(),error).array();
+        QJsonArray qArr = QJsonDocument::fromJson(prepro.toLatin1(),error).array();
         qDebug()<<qArr;
         switch (qArr.at(0).toInt(-1)) {
-        case 0:result = tologin(qArr.at(1).toString(),qArr.at(2).toString());break;
-        case 1:result = toregister(qArr);break;
-        case 2:result = toretrieve(qArr);break;
+        case 111:result = tologin(qArr.at(1).toString(),qArr.at(2).toString());break;
+        case 600:result = toregister(qArr);break;
+        case 710:
+        case 700:result = toretrieve(qArr);break;
         default:break;
         }
     }
@@ -94,13 +94,6 @@ int ClientSocket::doRequest(){//处理用户发送消息等功能
         }
     }
 }
-//ClientSocket * ClientSocket::FindByUuid(QString find){
-////    ClientSocket *res = onlineCS;
-////    while(res->Uuid != find){
-////        res=res->next;
-////    }
-////    return res;
-//}
 
 int ClientSocket::tologin(QString email, QString password){
     Uuid = DataBaseUtil::searchUuid(email,password);
@@ -108,9 +101,8 @@ int ClientSocket::tologin(QString email, QString password){
         QJsonArray arr;arr.insert(0,-1);
         arr.insert(1,"userName or password error!login fail!");
         QJsonDocument document;document.setArray(arr);
-        QByteArray byteArr = document.toJson(QJsonDocument::Compact);
-        sprintf(sendBuf,"%s",byteArr.toStdString().c_str());
-        send();
+        QString byteArr = document.toJson(QJsonDocument::Compact);
+        Qsend(byteArr);
         return 0;
     }
     qDebug()<<Uuid;
@@ -118,18 +110,52 @@ int ClientSocket::tologin(QString email, QString password){
     arr.insert(1,Uuid);arr.insert(2,inet_ntoa(clientAddr.sin_addr));
     arr.insert(3,clientAddr.sin_port);
     QJsonDocument document;document.setArray(arr);
-    QByteArray byteArr = document.toJson(QJsonDocument::Compact);
-    sprintf(sendBuf,"%s",byteArr.toStdString().c_str());
-    send();
+    QString byteArr = document.toJson(QJsonDocument::Compact);
+    Qsend(byteArr);
     return 1;
 }
 
 int ClientSocket::toregister(QJsonArray qArr){
-    Q_UNUSED(qArr);
+    if(DataBaseUtil::searchUuid(qArr.at(6).toString())){
+        qArr.replace(0,602);
+        QJsonDocument document;document.setArray(qArr);
+        QString byteArr = document.toJson(QJsonDocument::Compact);
+        Qsend(byteArr);
+    }else{
+        DataBaseUtil::saveRegister(qArr);
+        qArr.replace(0,601);
+        QJsonDocument document;document.setArray(qArr);
+        QString byteArr = document.toJson(QJsonDocument::Compact);
+        Qsend(byteArr);
+    }
     return 0;
 }
 
 int ClientSocket::toretrieve(QJsonArray qArr){
-    Q_UNUSED(qArr);
+    if(qArr.at(0).toInt() == 700){
+        if(DataBaseUtil::searchUuid(qArr.at(1).toString())){
+            QString info = DataBaseUtil::searchInfo(qArr.at(1).toString());
+            QJsonArray infoArr = QJsonDocument::fromJson(info.toLatin1(),NULL).array();
+            QJsonArray arr;arr.insert(0,701);
+            arr.insert(1,infoArr.at(3).toString());
+            arr.insert(2,infoArr.at(4).toString());
+            arr.insert(3,infoArr.at(0).toString());
+            QJsonDocument doc;doc.setArray(arr);
+            info = doc.toJson(QJsonDocument::Compact);
+            Qsend(info);
+        }
+        else{
+            QJsonArray arr;arr.insert(0,702);
+            QJsonDocument doc;doc.setArray(arr);
+            QString info = doc.toJson(QJsonDocument::Compact);
+            Qsend(info);
+        }
+    }else{
+        QJsonArray arr;arr.insert(0,710);
+        arr.insert(1,DataBaseUtil::searchPassword(qArr.at(1).toString()));
+        QJsonDocument doc;doc.setArray(arr);
+        QString send = doc.toJson(QJsonDocument::Compact);
+        Qsend(send);
+    }
     return 0;
 }
