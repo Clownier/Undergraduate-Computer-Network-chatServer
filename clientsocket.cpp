@@ -64,6 +64,28 @@ QString ClientSocket::carry(){//客户端链接服务器后预处理：注册登
         }
     }
     qDebug()<<inet_ntoa(clientAddr.sin_addr)<<":"<<clientAddr.sin_port<<"login success!";
+
+    QFile UserFile("history.txt");//发送离线消息
+    if(!UserFile.open(QIODevice::ReadOnly|QIODevice::Text)){
+        qDebug()<<"open history File fail!";
+        return "";
+    }
+    QTextStream txtOutput(&UserFile);
+    while(!txtOutput.atEnd()){
+        QString userInfo = txtOutput.readLine().toLatin1();
+        int index = userInfo.indexOf(Uuid);
+        if(index!=-1){
+            QJsonArray arr;arr.insert(0,257);
+            arr.insert(1,userInfo);
+            QJsonDocument doc;doc.setArray(arr);
+            QString send = doc.toJson(QJsonDocument::Compact);
+            Qsend(send);
+        }
+    }
+    UserFile.close();
+
+
+
     QString UserInfo = DataBaseUtil::getAllUsersName(Uuid);
     qDebug()<<"userInfo ="<<UserInfo.toStdString().data();
     int num = UserInfo.length()/200;
