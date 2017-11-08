@@ -7,35 +7,40 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QWidget *widget = new QWidget();
-    this->setCentralWidget(widget);
+//    QWidget *widget = new QWidget();
+//    this->setCentralWidget(widget);
 
-    lineEditAddress = new QLineEdit;
-    lineEditLoacalHostName = new QLineEdit;
+//    lineEditAddress = new QLineEdit;
+//    lineEditLoacalHostName = new QLineEdit;
 
-    QGridLayout *mainLayout= new QGridLayout(this);
-    mainLayout->addWidget(new QLabel(tr("IP address: ")),1,0);
-    mainLayout->addWidget(lineEditAddress,1,1);
-    mainLayout->addWidget(new QLabel(tr("Local HostName: ")),0,0);
-    mainLayout->addWidget(lineEditLoacalHostName,0,1);
+//    QGridLayout *mainLayout= new QGridLayout(this);
+//    mainLayout->addWidget(new QLabel(tr("IP address: ")),1,0);
+//    mainLayout->addWidget(lineEditAddress,1,1);
+//    mainLayout->addWidget(new QLabel(tr("Local HostName: ")),0,0);
+//    mainLayout->addWidget(lineEditLoacalHostName,0,1);
 
-    centralWidget()->setLayout(mainLayout);
+//    centralWidget()->setLayout(mainLayout);
 
     QString localHostName = QHostInfo::localHostName();
-    lineEditLoacalHostName->setText(localHostName);
+//    lineEditLoacalHostName->setText(localHostName);
     QHostInfo hostInfo = QHostInfo::fromName(localHostName);
     QList<QHostAddress> listAddress = hostInfo.addresses();
+    QString Address;
     if(listAddress.length()>6){
-        lineEditAddress->setText(listAddress.at(6).toString());
+//        lineEditAddress->setText(listAddress.at(6).toString());
+        Address = listAddress.at(6).toString();
         qDebug()<<listAddress.at(6).toString();
     }else{
-        lineEditAddress->setText(listAddress.last().toString());
+        Address = listAddress.last().toString();
         qDebug()<<listAddress.last().toString();
     }
 
-    for(int i =0;i<listAddress.length();i++)
-        qDebug()<<"the "<<i<<" address:"<<listAddress.at(i).toString()<<"\n";
-    //getHostInfoMation();
+    QLabel *per1 = new QLabel(Address, this);
+    statusBar()->addPermanentWidget(per1);
+    setWindowTitle("CoolChat服务器窗口");
+//    for(int i =0;i<listAddress.length();i++)
+//        qDebug()<<"the "<<i<<" address:"<<listAddress.at(i).toString()<<"\n";
+//    //getHostInfoMation();
     std::thread serverThread(&MainWindow::getHostInfoMation,this);
     serverThread.detach();
 }
@@ -60,6 +65,9 @@ void MainWindow::carryClient(ClientSocket socket){
     address.sprintf( "the visitor from %s:%d login!\n",
                      inet_ntoa(socket.clientAddr.sin_addr),socket.clientAddr.sin_port);
     qDebug()<<address;
+    ui->userListWidget->addItem(address.sprintf("%s:%d",
+                                                inet_ntoa(socket.clientAddr.sin_addr),socket.clientAddr.sin_port));
+//    ui->userListWidget->clear();
     QString Uuid = socket.carry();
     onLineCS.insert(Uuid,socket);
     while(1){
