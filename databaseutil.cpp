@@ -152,9 +152,10 @@ QString DataBaseUtil::getAllUsersName(QString Uuid){
     res.append(myName);
     return res;
 }
-
+vector<QString> DataBaseUtil::offline;
 int DataBaseUtil::writeAtEnd(QString context){
-    QFile writeFile("history.txt");
+    offline.push_back(context);
+    QFile writeFile("history2.txt");
     if(!writeFile.open(QIODevice::Append|QIODevice::Text|QIODevice::WriteOnly)){
         qDebug()<<"open history fail!";
         return -1;

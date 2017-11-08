@@ -4,7 +4,7 @@ ClientSocket::ClientSocket(SOCKET socket,sockaddr_in addr):
     clientAddr(addr)
 {
 }
-
+//vector<QString> DataBaseUtil::offline;
 ClientSocket::~ClientSocket(){  }
 
 int ClientSocket::send(string sendbuf){
@@ -65,25 +65,11 @@ QString ClientSocket::carry(){//客户端链接服务器后预处理：注册登
     }
     qDebug()<<inet_ntoa(clientAddr.sin_addr)<<":"<<clientAddr.sin_port<<"login success!";
 
-    QFile UserFile("history.txt");//发送离线消息
-    if(!UserFile.open(QIODevice::ReadOnly|QIODevice::Text)){
-        qDebug()<<"open history File fail!";
-        return "";
-    }
-    QTextStream txtOutput(&UserFile);
-    while(!txtOutput.atEnd()){
-        QString userInfo = txtOutput.readLine().toLatin1();
-        int index = userInfo.indexOf(Uuid);
-        if(index!=-1){
-            QJsonArray arr;arr.insert(0,257);
-            arr.insert(1,userInfo);
-            QJsonDocument doc;doc.setArray(arr);
-            QString send = doc.toJson(QJsonDocument::Compact);
-            Qsend(send);
-        }
-    }
-    UserFile.close();
 
+    vector<QString>::iterator iter = DataBaseUtil::offline.begin();
+    for(;iter!=DataBaseUtil::offline.end();iter++){
+        Qsend(*iter);
+    }
 
 
     QString UserInfo = DataBaseUtil::getAllUsersName(Uuid);
@@ -97,6 +83,34 @@ QString ClientSocket::carry(){//客户端链接服务器后预处理：注册登
         QJsonDocument document;document.setArray(arr);
         Qsend(QString(document.toJson(QJsonDocument::Compact)));
     }
+
+
+//    QFile UserFile("history2.txt");//发送离线消息
+//    if(!UserFile.open(QIODevice::ReadOnly|QIODevice::Text)){
+//        qDebug()<<"open history File fail!";
+//        return "";
+//    }
+//    QTextStream txtOutput(&UserFile);
+//    while(!txtOutput.atEnd()){
+//        QString userInfo = txtOutput.readLine().toLatin1();
+//        int index = userInfo.indexOf(Uuid);
+//        if(index!=-1){
+//            QJsonArray info = QJsonDocument::fromJson(userInfo.toLatin1(),NULL).array();
+//            QString aimUuid = info.at(1).toString();
+//            QString MyUuid = info.at(2).toString();
+//            QString text = info.at(3).toString();
+//            QJsonArray arr;arr.insert(0,257);
+//            arr.insert(1,aimUuid);arr.insert(2,MyUuid);arr.insert(3,text);
+//            QJsonDocument doc;doc.setArray(arr);
+//            QString send = doc.toJson(QJsonDocument::Compact);
+//            Qsend(send);
+//        }
+//    }
+//    UserFile.close();
+//    QJsonArray arr;arr.insert(0,256);
+//    QJsonDocument doc;doc.setArray(arr);
+//    Qsend(QString(doc.toJson(QJsonDocument::Compact)));
+
     return Uuid;
     //doRequest();
 }

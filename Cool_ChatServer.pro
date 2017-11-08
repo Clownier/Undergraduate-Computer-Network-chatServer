@@ -47,4 +47,5 @@ FORMS += \
 DISTFILES += \
     ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/history.txt \
     ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/loginFile.txt \
-    ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/userFile.txt
+    ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/userFile.txt \
+    ../build-Cool_ChatServer-Desktop_Qt_5_9_1_MinGW_32bit-Debug/history2.txt

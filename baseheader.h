@@ -21,6 +21,8 @@
 #include<QListWidget>
 #include<vector>
 #include<QMap>
+#include<QTimer>
+#include<QTime>
 #define BUFLEN 255
 using namespace std;
 void showCritical(const QString content);

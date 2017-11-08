@@ -12,6 +12,7 @@ public:
     ~DataBaseUtil();
     int openReadFile();
     int openWriteFile();
+    static vector<QString> offline;
     static QString searchUuid(QString email,QString password);
     static bool searchUuid(QString email);
     static QString getAllUsersName(QString uuid);
