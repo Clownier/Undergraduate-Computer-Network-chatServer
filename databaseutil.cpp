@@ -44,6 +44,7 @@ QString DataBaseUtil::searchInfo(QString email){
     QJsonArray infoArr;
     while(!txtOutput.atEnd()){
         user = txtOutput.readLine().toLatin1();
+        user = QByteArray::fromBase64(user);
         infoArr = QJsonDocument::fromJson(user,error).array();
         if(infoArr.at(2).toString()==email){
             UserFile.close();
@@ -66,6 +67,7 @@ bool DataBaseUtil::searchUuid(QString email){
     QJsonArray infoArr;
     while(!txtOutput.atEnd()){
         user = txtOutput.readLine().toLatin1();
+        user = QByteArray::fromBase64(user);
         infoArr = QJsonDocument::fromJson(user,error).array();
         if(infoArr.at(0).toString()==email){
             loginFile.close();
@@ -88,6 +90,7 @@ QString DataBaseUtil::searchUuid(QString email, QString password){
     QJsonArray infoArr;
     while(!txtOutput.atEnd()){
         user = txtOutput.readLine().toLatin1();
+        user = QByteArray::fromBase64(user);
         infoArr = QJsonDocument::fromJson(user,error).array();
         if(infoArr.at(0).toString()==email){
             if(infoArr.at(1).toString()==password){
@@ -114,6 +117,7 @@ QString DataBaseUtil::searchPassword(QString Uuid){
     QJsonArray infoArr;
     while(!txtOutput.atEnd()){
         user = txtOutput.readLine().toLatin1();
+        user = QByteArray::fromBase64(user);
         infoArr = QJsonDocument::fromJson(user,error).array();
         if(infoArr.at(2).toString()==Uuid){
             loginFile.close();
@@ -139,6 +143,7 @@ QString DataBaseUtil::getAllUsersName(QString Uuid){
     QStringList strlist;
     while(!txtOutput.atEnd()){
         userInfo = txtOutput.readLine().toLatin1();
+        userInfo = QByteArray::fromBase64(userInfo);
         infoarr = QJsonDocument::fromJson(userInfo,error).array();
         if(infoarr.at(0).toString()==Uuid){
             myName = infoarr.at(1).toString();
@@ -161,7 +166,9 @@ int DataBaseUtil::writeAtEnd(QString context){
         return -1;
     }
     QTextStream txtInput(&writeFile);
-    txtInput<<context<<endl;
+    QByteArray text = context.toLatin1();
+    text = text.toBase64();
+    txtInput<<text<<endl;
     return 0;
 }
 
@@ -179,7 +186,9 @@ void DataBaseUtil::saveRegister(QJsonArray arr){
     loginarr.insert(2,Uuid);
     QJsonDocument doc;doc.setArray(loginarr);
     QString login = doc.toJson(QJsonDocument::Compact);
-    txtInHis<<login<<endl;
+    QByteArray text = login.toLatin1();
+    text = text.toBase64();
+    txtInHis<<text<<endl;
     writeHis.close();
 
 
@@ -197,6 +206,8 @@ void DataBaseUtil::saveRegister(QJsonArray arr){
     Userarr.insert(4,arr.at(5).toString());
     QJsonDocument doc1;doc1.setArray(Userarr);
     QString User = doc1.toJson(QJsonDocument::Compact);
-    txtInUser<<User<<endl;
+    text = User.toLatin1();
+    text = text.toBase64();
+    txtInUser<<text<<endl;
     writeUser.close();
 }
